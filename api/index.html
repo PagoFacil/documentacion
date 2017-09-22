@@ -235,6 +235,9 @@
                   <li>
                     <a href="#consultar-una-orden-cargo" class="toc-h2 toc-link" data-title="Pagos en efectivo">Consultar una orden/cargo</a>
                   </li>
+                  <li>
+                    <a href="#reporte-de-ordenes-cargos" class="toc-h2 toc-link" data-title="Pagos en efectivo">Reporte de órdenes /cargos</a>
+                  </li>
               </ul>
           </li>
           <li>
@@ -254,6 +257,45 @@
 <h1 id='pagos-en-efectivo'>Pagos en efectivo</h1><h2 id='introduccion-2'>Introducción</h2>
 <p>Nuestra API proporciona 3 métodos para implementar el proceso de pagos en efectivo en tu sitio web.
 Éstos se mencionan a continuación:</p>
+<h3 id='tiendas-de-conveniencia'>Tiendas de conveniencia</h3>
+<table><thead>
+<tr>
+<th>Establecimiento</th>
+<th>Código</th>
+<th>Monto máximo</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>OXXO</td>
+<td>OXXO</td>
+<td>15,000.00 MXN</td>
+</tr>
+<tr>
+<td>Seven eleven</td>
+<td>SEVEN_ELEVEN</td>
+<td>15,000.00 MXN</td>
+</tr>
+<tr>
+<td>Extra</td>
+<td>EXTRA</td>
+<td>5,000.00 MXN</td>
+</tr>
+<tr>
+<td>Chedraui</td>
+<td>CHEDRAUI</td>
+<td>5,000.00 MXN</td>
+</tr>
+<tr>
+<td>Farmacia Benavides</td>
+<td>FARMACIA_BENAVIDES</td>
+<td>5,000.00 MXN</td>
+</tr>
+<tr>
+<td>Farmacia Esquivar</td>
+<td>FARMACIA_ESQUIVAR</td>
+<td>5,000.00 MXN</td>
+</tr>
+</tbody></table>
 <h2 id='realizar-una-orden-cargo'>Realizar una orden/cargo</h2><pre class="highlight php tab-php"><code><span class="cp">&lt;?php</span>
 <span class="nv">$host</span> <span class="o">=</span> <span class="s1">'https://stapi.pagofacil.net/cash/charge'</span><span class="p">;</span>
 <span class="nv">$params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
@@ -484,6 +526,118 @@
 <td>reference</td>
 <td>String(45)</td>
 <td>dentificador enviado por PagoFácil al realizar una orden/cargo</td>
+</tr>
+</tbody></table>
+<h2 id='reporte-de-ordenes-cargos'>Reporte de órdenes /cargos</h2><pre class="highlight php tab-php"><code><span class="cp">&lt;?php</span>
+<span class="nv">$host</span> <span class="o">=</span> <span class="s1">'https://stapi.pagofacil.net/cash/charges'</span><span class="p">;</span>
+<span class="nv">$params</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+<span class="s1">'branch_key'</span> <span class="o">=&gt;</span> <span class="s1">'ba3b2748672431ebeebeed1327c14959a94a74be'</span><span class="p">,</span>
+<span class="s1">'user_key'</span> <span class="o">=&gt;</span> <span class="s1">'ce4287a4093e4fca1928f2cde9bf041ee7de8292'</span><span class="p">,</span>
+<span class="s1">'secret_key'</span> <span class="o">=&gt;</span> <span class="s1">'s3cr3tK3y'</span><span class="p">,</span>
+<span class="s1">'date_start'</span> <span class="o">=&gt;</span> <span class="s1">'2017-01-01 12:00:00'</span><span class="p">,</span>
+<span class="s1">'date_end'</span> <span class="o">=&gt;</span> <span class="s1">'2017-01-01 12:00:00'</span><span class="p">,</span>
+<span class="p">);</span>
+<span class="nv">$ch</span> <span class="o">=</span> <span class="nb">curl_init</span><span class="p">();</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_URL</span><span class="p">,</span> <span class="nv">$host</span><span class="p">);</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_SSL_VERIFYPEER</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_RETURNTRANSFER</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_HTTPGET</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="nb">curl_setopt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nx">CURLOPT_POSTFIELDS</span><span class="p">,</span> <span class="nb">http_build_query</span><span class="p">(</span><span class="nv">$params</span><span class="p">));</span>
+<span class="nv">$result</span> <span class="o">=</span> <span class="nb">curl_exec</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+<span class="nb">curl_close</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+<span class="nv">$charge</span> <span class="o">=</span> <span class="nb">json_decode</span><span class="p">(</span><span class="nv">$result</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="cp">?&gt;</span>
+</code></pre><pre class="highlight ruby tab-ruby"><code><span class="nb">require</span> <span class="s2">"net/http"</span>
+<span class="nb">require</span> <span class="s2">"uri"</span>
+<span class="n">uri</span> <span class="o">=</span> <span class="no">URI</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="s2">"https://stapi.pagofacil.net/cash/charges"</span><span class="p">)</span>
+<span class="n">http</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">host</span><span class="p">,</span> <span class="n">uri</span><span class="p">.</span><span class="nf">port</span><span class="p">)</span>
+<span class="n">http</span><span class="p">.</span><span class="nf">use_ssl</span> <span class="o">=</span> <span class="kp">true</span>
+<span class="n">http</span><span class="p">.</span><span class="nf">verify_mode</span> <span class="o">=</span> <span class="no">OpenSSL</span><span class="o">::</span><span class="no">SSL</span><span class="o">::</span><span class="no">VERIFY_NONE</span>
+<span class="n">request</span> <span class="o">=</span> <span class="no">Net</span><span class="o">::</span><span class="no">HTTP</span><span class="o">::</span><span class="no">Get</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="n">uri</span><span class="p">.</span><span class="nf">request_uri</span><span class="p">)</span>
+<span class="n">request</span><span class="p">.</span><span class="nf">set_form_data</span><span class="p">({</span>
+<span class="s2">"branch_key"</span> <span class="o">=&gt;</span> <span class="s2">"ba3b2748672431ebeebeed1327c14959a94a74be"</span><span class="p">,</span>
+<span class="s2">"user_key"</span> <span class="o">=&gt;</span> <span class="s2">"ce4287a4093e4fca1928f2cde9bf041ee7de8292"</span><span class="p">,</span>
+<span class="s2">"secret_key"</span> <span class="o">=&gt;</span> <span class="s2">"s3cr3tK3y"</span><span class="p">,</span>
+<span class="s2">"date_start"</span> <span class="o">=&gt;</span> <span class="s2">"2017-01-01 12:00:00"</span><span class="p">,</span>
+<span class="s2">"date_end"</span> <span class="o">=&gt;</span> <span class="s2">"2017-01-01 12:00:00"</span><span class="p">,</span>
+<span class="p">})</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">http</span><span class="p">.</span><span class="nf">request</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+<span class="nb">puts</span> <span class="n">response</span><span class="p">.</span><span class="nf">body</span>
+</code></pre><pre class="highlight csharp tab-csharp"><code><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Collections.Generic</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Text</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Net</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.IO</span><span class="p">;</span>
+<span class="k">namespace</span> <span class="nn">ConsoleApplication1</span>
+<span class="p">{</span>
+  <span class="k">class</span> <span class="nc">Program</span>
+  <span class="p">{</span>
+    <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+    <span class="p">{</span>
+     <span class="n">WebRequest</span> <span class="n">request</span> <span class="p">=</span> <span class="n">WebRequest</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span>
+         <span class="s">"https://stapi.pagofacil.net/cash/charges"</span>
+     <span class="p">);</span>
+      <span class="kt">string</span> <span class="n">param</span> <span class="p">=</span>
+      <span class="s">"branch_key=ba3b2748672431ebeebeed1327c14959a94a74be"</span> <span class="p">+</span>
+      <span class="s">"&amp;user_key=ce4287a4093e4fca1928f2cde9bf041ee7de8292"</span> <span class="p">+</span>
+      <span class="s">"&amp;reference=reference001"</span> <span class="p">+</span>
+      <span class="s">"&amp;secret_key=s3cr3tK3y"</span> <span class="p">+</span>
+      <span class="s">"&amp;date_start=2017-01-01 12:00:00"</span> <span class="p">+</span>
+      <span class="s">"&amp;date_end=2017-01-01 12:00:00"</span><span class="p">;</span>
+      <span class="n">request</span><span class="p">.</span><span class="n">Method</span> <span class="p">=</span> <span class="s">"GET"</span><span class="p">;</span>
+      <span class="n">request</span><span class="p">.</span><span class="n">ContentType</span> <span class="p">=</span> <span class="s">"application/x-­­www-form-urlencoded"</span><span class="p">;</span>
+      <span class="n">request</span><span class="p">.</span><span class="n">ContentLength</span> <span class="p">=</span> <span class="n">param</span><span class="p">.</span><span class="n">Length</span><span class="p">;</span>
+      <span class="kt">byte</span><span class="p">[]</span> <span class="n">paramsList</span> <span class="p">=</span> <span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="nf">GetBytes</span><span class="p">(</span><span class="n">param</span><span class="p">);</span>
+      <span class="n">Stream</span> <span class="n">writer</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="nf">GetRequestStream</span><span class="p">();</span>
+      <span class="n">writer</span><span class="p">.</span><span class="nf">Write</span><span class="p">(</span><span class="n">paramsList</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="n">paramsList</span><span class="p">.</span><span class="n">Length</span><span class="p">);</span>
+      <span class="n">writer</span><span class="p">.</span><span class="nf">Close</span><span class="p">();</span>
+      <span class="n">WebResponse</span> <span class="n">response</span> <span class="p">=</span> <span class="n">request</span><span class="p">.</span><span class="nf">GetResponse</span><span class="p">();</span>
+      <span class="kt">string</span> <span class="n">result</span> <span class="p">=</span> <span class="p">(</span><span class="k">new</span> <span class="nf">StreamReader</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="nf">GetResponseStream</span><span class="p">())).</span><span class="nf">ReadToEnd</span><span class="p">();</span>
+      <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+      <span class="n">response</span><span class="p">.</span><span class="nf">Close</span><span class="p">();</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre><h3 id='http-request-3'>HTTP Request</h3>
+<ul>
+<li>Producción:
+<code>GET|POST https://www.pagofacil.net/ws/public/cash/charges</code></li>
+<li>Stage:
+<code>GET|POST https://stapi.pagofacil.net/cash/charges</code></li>
+</ul>
+<h3 id='query-parameters-3'>Query Parameters</h3>
+<table><thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>branch_key</td>
+<td>String(100)</td>
+<td>Api key sucursal</td>
+</tr>
+<tr>
+<td>user_key</td>
+<td>String(100)</td>
+<td>Api key usuario</td>
+</tr>
+<tr>
+<td>secret_key</td>
+<td>String(64)</td>
+<td>Clave privada. <strong>NOTA</strong>: debe solicitarla a soporte@pagofacil.net</td>
+</tr>
+<tr>
+<td>date_start</td>
+<td>String(19)</td>
+<td>Fecha inicial del reporte, formato AAAA-MM-­DD HH:MM:SS</td>
+</tr>
+<tr>
+<td>date_end</td>
+<td>String(19)</td>
+<td>Fecha inicial del reporte, formato AAAA-MM-­DD HH:MM:SS</td>
 </tr>
 </tbody></table>
 <h1 id='errors'>Errors</h1>
