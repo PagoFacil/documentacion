@@ -241,6 +241,20 @@
               </ul>
           </li>
           <li>
+            <a href="#cobro-via-token" class="toc-h1 toc-link" data-title="Cobro vía token">Cobro vía token</a>
+              <ul class="toc-list-h2">
+                  <li>
+                    <a href="#alta-de-un-token" class="toc-h2 toc-link" data-title="Cobro vía token">Alta de un token:</a>
+                  </li>
+                  <li>
+                    <a href="#baja-de-un-token" class="toc-h2 toc-link" data-title="Cobro vía token">Baja de un token:</a>
+                  </li>
+                  <li>
+                    <a href="#realizar-cobro-a-la-tarjeta-bancaria" class="toc-h2 toc-link" data-title="Cobro vía token">Realizar cobro a la tarjeta bancaria.</a>
+                  </li>
+              </ul>
+          </li>
+          <li>
             <a href="#errors" class="toc-h1 toc-link" data-title="Errors">Errors</a>
           </li>
       </div>
@@ -638,6 +652,344 @@
 <td>date_end</td>
 <td>String(19)</td>
 <td>Fecha inicial del reporte, formato AAAA-MM-­DD HH:MM:SS</td>
+</tr>
+</tbody></table>
+<h1 id='cobro-via-token'>Cobro vía token</h1>
+<p>Al hacer uso del webservice para realizar la integración de cobros vía token, se solicita que el envió de los parámetros sea en un formato JSON con la información requerida dependiendo de la operación que se busca ejecutar.</p>
+
+<p>La información se solicita que se envié de manera encriptada bajo el algoritmo de <strong>AES 128</strong> el cual contendrá los datos a procesar.
+La llave de cifrado se solicitará a <strong>soporte@pagofacil.net</strong> indicando el tema de “Llave de encriptación” indicando el nombre con el que se dio de alta en PagoFácil.</p>
+
+<p>Una vez que se tenga la llave de cifrado, se procederá a formar la petición en base a los parámetros de la operación que se desea ejecutar.
+Ejemplo:
+<code>
+{
+  idSucursal&quot;:&quot;e147ee31531d815e2307g8o953k929ab599deb98&quot;,
+  &quot;idUsuario&quot;:&quot;f541b3f11f0f9b3fuhiolikof22f6d711f2af58&quot;,
+  &quot;nombre&quot;:&quot;Cliente&quot;,
+  &quot;apellidos&quot;:&quot;apellido cliente&quot;,
+  &quot;calleyNumero&quot;:&quot;Anatole France 311&quot;,
+  &quot;colonia&quot;:&quot;Polanco&quot;,
+  &quot;municipio&quot;:&quot;Milpa Alta&quot;,
+  &quot;estado&quot;:&quot;CDMX&quot;,
+  &quot;cp&quot;:&quot;11000&quot;,
+  &quot;telefono&quot;:&quot;6789543210&quot;,
+  &quot;celular&quot;:&quot;5565434504&quot;,
+  &quot;email&quot;:&quot;comprador@mail.com&quot;,
+  &quot;numeroTarjeta&quot;:&quot;4111111111111111&quot;,
+  &quot;cvt&quot;:&quot;314&quot;,
+  &quot;mesExpiracion&quot;:&quot;12&quot;,
+  &quot;anyoExpiracion&quot;:&quot;21&quot;
+}
+</code>
+Esta cadena se procederá a encriptar bajo el algoritmo mencionado anteriormente y se procederá a enviarla por POST a los EndPoint indicados dependiendo de la operación.</p>
+
+<p>Por cada operación se mandarán 2 campos vía POST:
+- idUsuario: Se obtiene el en manager de PagoFácil.
+- data : contenido de los parámetros cifrados (este varia por cada operación).</p>
+<h2 id='alta-de-un-token'>Alta de un token:</h2>
+<p>Se utiliza para dar de alta una tarjeta bancaria por primera vez, esta devolverá los parámetros correspondientes para proceder a realizar un pago con esta mista tarjeta.</p>
+<h3 id='http-request-4'>HTTP Request</h3>
+<ul>
+<li>Producción:
+<code>POST https://www.pagofacil.net/ws/public/CobroToken/Altatoken</code></li>
+<li>Stage:
+<code>POST https://www.pagofacil.net/st/public/CobroToken/Altatoken</code></li>
+</ul>
+<h3 id='parametros'>Parámetros</h3>
+<p>Campo|Tipo|Descripción|Requerido
+--------- | ------- | -----------
+nombre|varchar (60)|Nombre del titular de la tarjeta|Si
+apellidos|varchar (60)|Apellidos del titular de la tarjeta|Si
+calleyNumero|varchar (45)|Dirección del titular de la tarjeta|Si
+colonia|varchar(30)|Colonia del titular de la tarjeta|Si
+municipio|varchar (30)|Ciudad del titular de la tarjeta|Si
+estado|varchar (45)|Estado del titular de la tarjeta|Si
+cp|varchar (9)|Código Postal del titular de la tarjeta|Si
+telefono|varchar(10)|Teléfono del titular de la tarjeta|Si
+celular|varchar(10)|Numero de celular del titular de la tarjeta|Si
+email|mail (200)|Email del titular de la tarjeta|Si
+numeroTarjeta|varchar (16)|Número de cuenta|Si
+cvt|int(4)|Código de verificación de tarjeta, usualmente impreso en el área de firma de la tarjeta, utilizado para validar que la tarjeta usada pertenezca a la persona que genero la compra|Si
+mesExpiracion|int (2)|Mes de expiración de tarjeta|Si
+anyoExpiracion|int (2)|Año de expiración de tarjeta|Si
+idSucursal|Varchar(60) alfanumérico|En caso de contar con varias sucursales se podrá utilizar este identificador para distinguir las transacciones|Si
+IdUsuario|Varchar(60) alfanumérico|Sera el identificador de la empresa ante PagoFácil|Si</p>
+<h3 id='respuesta'>Respuesta</h3>
+<table><thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+<th>Requerido</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>token</td>
+<td>String (26)</td>
+<td>Referencia o número de seguimiento generada por PagoFacil</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>autorizado</td>
+<td>bool(1)</td>
+<td>Este campo nos indicara si la transacción fue exitosa (1) o declinada (0)</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>autorizacion</td>
+<td>Int</td>
+<td>No de Autorización de la bóveda. <strong>NOTA</strong>: Este campo sera requerido para solicitar la baja de Token.</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>texto</td>
+<td>String(100)</td>
+<td>Describe si una transacción tuvo un error o fue exitosa. <em>Token generado/Error en generación de Token</em></td>
+<td>Si</td>
+</tr>
+<tr>
+<td>error</td>
+<td>Array</td>
+<td>Array el cual en caso de error contiene los mensajes con el formato ‘campo’=&gt;’error’</td>
+<td>No</td>
+</tr>
+<tr>
+<td>data</td>
+<td>Array</td>
+<td>Array que contiene los datos que se enviaron originalmente</td>
+<td>Si</td>
+</tr>
+</tbody></table>
+<h2 id='baja-de-un-token'>Baja de un token:</h2>
+<p>Dar de baja un token al cual ya no se le vayan a realizar cargos.</p>
+<h3 id='http-request-5'>HTTP Request</h3>
+<ul>
+<li>Producción:
+<code>POST https://www.pagofacil.net/ws/public/CobroToken/Bajatoken</code></li>
+<li>Stage:
+<code>POST https://www.pagofacil.net/st/public/CobroToken/Bajatoken</code></li>
+</ul>
+<h3 id='parametros-2'>Parámetros</h3>
+<table><thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+<th>Requerido</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>token</td>
+<td>Varchar (26)</td>
+<td>Referencia o número de seguimiento generada por Pago Fácil</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>autorizacion</td>
+<td>Varchar (26)</td>
+<td>Dato generado y retornado al cliente (autorización) cuando se dio de alta el Token</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>idSucursal</td>
+<td>Varchar(60)</td>
+<td>Credenciales API</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>idUsuario</td>
+<td>Varchar(60)</td>
+<td>Credenciales API</td>
+<td>Si</td>
+</tr>
+</tbody></table>
+<h3 id='respuesta-2'>Respuesta</h3>
+<table><thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+<th>Requerido</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>token</td>
+<td>String (26)</td>
+<td>Token Eliminado</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>autorizado</td>
+<td>bool(1)</td>
+<td>Este campo nos indicara si la transacción fue exitosa (1) o declinada (0)</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>autorizacion</td>
+<td>Int</td>
+<td>Número requerido para dar de baja un token.</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>texto</td>
+<td>String(100)</td>
+<td>Describe si una transacción tuvo un error o fue exitosa:</td>
+<td>Token generado eliminado/Error en eliminación de Token</td>
+</tr>
+<tr>
+<td>error</td>
+<td>Array</td>
+<td>Array el cual en caso de error contiene los mensajes con el formato ‘campo’=&gt;’error’</td>
+<td>No</td>
+</tr>
+<tr>
+<td>data</td>
+<td>Array</td>
+<td>Array que contiene los datos que se enviaron originalmente</td>
+<td>Si</td>
+</tr>
+</tbody></table>
+<h2 id='realizar-cobro-a-la-tarjeta-bancaria'>Realizar cobro a la tarjeta bancaria.</h2>
+<p>Realizar un cobro a una tarjeta bancaria.</p>
+<h3 id='http-request-6'>HTTP Request</h3>
+<ul>
+<li>Producción: <code>POST https://www.pagofacil.net/ws/public/CobroToken/Transacciontoken</code></li>
+<li>Stage:
+<code>POST https://www.pagofacil.net/st/public/CobroToken/Transacciontoken</code></li>
+</ul>
+<h3 id='parametros-3'>Parámetros</h3>
+<table><thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+<th>Requerido</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>idSucursal</td>
+<td>varchar (100)</td>
+<td>Credenciales API</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>idUsuario</td>
+<td>varchar (100)</td>
+<td>Credenciales API</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>token</td>
+<td>varchar (26)</td>
+<td>Dato proporcionado al cliente al Tokenizar Tarjeta</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>monto</td>
+<td>Decimal</td>
+<td>El monto (MXP) del cargo a la tarjeta</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>idPedido</td>
+<td>varchar(60)</td>
+<td>Campo para que el establecimiento pueda ligar la transacción con algún identificador de su producto o servicio. Nota: es importante que sea único este identificador</td>
+<td>No</td>
+</tr>
+<tr>
+<td>param1</td>
+<td>varchar(60)</td>
+<td>Variable adicional de uso especificado por el comercio</td>
+<td>No</td>
+</tr>
+<tr>
+<td>param2</td>
+<td>varchar(60)</td>
+<td>Variable adicional de uso especificado por el comercio</td>
+<td>No</td>
+</tr>
+<tr>
+<td>param3</td>
+<td>varchar(60)</td>
+<td>Variable adicional de uso especificado por el comercio</td>
+<td>No</td>
+</tr>
+<tr>
+<td>param4</td>
+<td>varchar(60)</td>
+<td>Variable adicional de uso especificado por el comercio</td>
+<td>No</td>
+</tr>
+<tr>
+<td>param5</td>
+<td>varchar(60)</td>
+<td>Variable adicional de uso especificado por el comercio</td>
+<td>No</td>
+</tr>
+</tbody></table>
+<h3 id='respuesta-3'>Respuesta</h3>
+<table><thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+<th>Requerido</th>
+</tr>
+</thead><tbody>
+<tr>
+<td>Token</td>
+<td>String (26)</td>
+<td>Token de la tarjeta del cliente</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>autorizado</td>
+<td>Bool (1)</td>
+<td>Este campo nos indicara si la transacción fue exitosa (1) o declinada (0)</td>
+<td>Si</td>
+</tr>
+<tr>
+<td>Transaccion</td>
+<td>String(50)</td>
+<td>Identificador de PagoFácil para la transacción realizada</td>
+<td>No</td>
+</tr>
+<tr>
+<td>texto</td>
+<td>String(100)</td>
+<td>Describe si una transacción tuvo un error o fue exitosa</td>
+<td>No</td>
+</tr>
+<tr>
+<td>error</td>
+<td>array</td>
+<td>Array el cual en caso de error contiene los mensajes con el formato ‘campo’=&gt;’error’</td>
+<td>No</td>
+</tr>
+<tr>
+<td>mode</td>
+<td>Nvarchar (1)</td>
+<td>Indica si la transacción se realizó en el entorno de prueba (R) o producción (P)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>transIni</td>
+<td>DateTime(22)</td>
+<td>Hora en la que la transacción inicio</td>
+<td>No</td>
+</tr>
+<tr>
+<td>transFin</td>
+<td>DateTime(22)</td>
+<td>Hora en la que la transacción finalizo</td>
+<td>No</td>
+</tr>
+<tr>
+<td>data</td>
+<td>Array</td>
+<td>Array que contiene los datos que se enviaron originalmente</td>
+<td>Si</td>
 </tr>
 </tbody></table>
 <h1 id='errors'>Errors</h1>
